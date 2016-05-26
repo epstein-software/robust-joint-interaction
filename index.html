@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Robust-joint-interaction by epstein-software</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Robust-joint-interaction</h1>
+      <h2 class="project-tagline">An R function to allow users to perform robust joint testing of SNP and SNP-environment interaction within the PLINK software toolset for whole genome association analysis.</h2>
+      <a href="https://github.com/epstein-software/robust-joint-interaction" class="btn">View on GitHub</a>
+      <a href="https://github.com/epstein-software/robust-joint-interaction/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/epstein-software/robust-joint-interaction/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h2>
+<a id="-robust-joint-tests-of-snp-and-snp-environment-interaction" class="anchor" href="#-robust-joint-tests-of-snp-and-snp-environment-interaction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><img src="Rlogo.png" alt="R"> Robust Joint Tests of SNP and SNP-Environment Interaction</h2>
+
+<h3>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h3>
+
+<p>In <a href="http://archpsyc.jamanetwork.com/article.aspx?articleid=1919420">Almli et al. (2014)</a>
+we created a robust test of SNP and SNP-environment interaction for complex traits that
+used Huber-White estimates of variance to eliminate bias arising from heteroscedasticity
+or other model misspecification. We implemented this test in R script called with
+<a href="http://pngu.mgh.harvard.edu/%7Epurcell/plink/index.shtml%22">PLINK</a>.</p>
+
+<p>We illustrate how to use the R function below.</p>
+
+<h3>
+<a id="the-r-base-system" class="anchor" href="#the-r-base-system" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The R base system</h3>
+
+<p>R is a widely-used, free and open source software environment for statistical computing and graphics.
+The most recent version of R can be downloaded from the
+<a href="http://cran.r-project.org/">Comprehensive R Archive Network (CRAN)</a>
+CRAN provides precompiled binary versions of R for Windows, MacOS, and select Linux distributions
+that are likely sufficient for many users' needs.  Users can also install R from source code;
+however this may require a significant amount of effort.
+For specific details on how to compile, install, and manage R and R-packages, refer to the manual 
+<a href="http://cran.r-project.org/doc/manuals/r-release/R-admin.html">R Installation and Administration</a>.</p>
+
+<h3>
+<a id="r-packages-required-for-analysis" class="anchor" href="#r-packages-required-for-analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>R packages required for analysis</h3>
+
+<p>Our robust test of SNP and SNP-environment interaction for complex traits requires the installation
+of two R libraries:</p>
+
+<ul>
+<li>
+<a href="http://cran.r-project.org/web/packages/Rserve/index.html">Rserve</a>,
+required for PLINK to run the R plugin function and</li>
+<li>
+<a href="http://cran.r-project.org/web/packages/geepack/index.html">geepack</a>, 
+required to obtain the robust variance estimators for the joint interaction test.</li>
+</ul>
+
+<p>The easiest method to install these packages is to open a R session and enter the command:</p>
+
+<pre><code>install.packages("geepack")
+</code></pre>
+
+<p>Choose a mirror and the package should automatically download.</p>
+
+<p>A similar command,</p>
+
+<pre><code>install.packages("Rserve")
+</code></pre>
+
+<p>should install the Rserve package.</p>
+
+<p>One can also install R packages from the command line
+<a href="http://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installing-packages">see more details here</a>.</p>
+
+<p><strong>Please note that PLINK only provides support for R functions in their Linux-based
+and Mac OS distributions.</strong></p>
+
+<h3>
+<a id="starting-rserve" class="anchor" href="#starting-rserve" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Starting Rserve</h3>
+
+<p>There are a few ways to <a href="http://rforge.net/Rserve/faq.html#start">start Rserve in daemon mode</a>.
+I. One method uses the command line;  in particular:
+    R CMD Rserve</p>
+
+
+  <img src="Rserve-cmdline-start.png" alt="Rserve-cmdline-start.png" align="middle">
+  Figure 1.  Terminal output after starting Rserve from command line.
+
+
+<p>II. Alternatively, one can start Rserve by saving the following two lines
+into a script file called <code>run-Rserve.R</code>:</p>
+
+<pre><code>library(Rserve)&lt;br&gt;
+Rserve(args="--no-save")
+</code></pre>
+
+<p>Then the script can be executed through R from the command line
+with command <code>R --vanilla &lt; run-Rserve.R</code>.</p>
+
+<p>As well, these two lines of R code could also be executed
+within an R console or an R environment such as <a href="http://www.rstudio.com/">RStudio</a>.</p>
+
+<h3>
+<a id="using-plink-to-perform-robust-joint-test" class="anchor" href="#using-plink-to-perform-robust-joint-test" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using PLINK to perform robust joint test</h3>
+
+<p>Once Rserve is installed and running locally, we can use PLINK to invoke
+the R function to perform robust joint testing of SNP and SNP-environment
+interaction.  We provide 
+<a href="test-int-plink.tgz">sample PLINK files</a> (PED/MAP/COV) consisting of
+500 individuals genotyped for 10 SNPs and assayed for three environmental
+predictors.  For each of the 10 SNPs, we wish to perform a joint test and
+SNP and SNP-environment interaction using the first environmental
+predictor listed in the COV file (the second and third environmental
+predictors in the COV file are treated only as covariates).
+To perform these analyses on our test dataset, we invoke the following PLINK command:</p>
+
+<pre><code>plink --file test-int-plink --covar test-int-plink.cov --R robust-joint-int-plugin.R
+</code></pre>
+
+<p>The command will generate a file 'plink.auto.R'.
+Each row of the file corresponds to results from a tested SNP and has the following fields (in order): </p>
+
+<ul>
+<li>Chromosome position</li>
+<li>SNP id</li>
+<li>Physical Position (base-pair)</li>
+<li>Minor allele</li>
+<li>P-value of model-based test of SNP and SNP-environment interaction</li>
+<li>P-value of robust test of SNP and SNP-environment interaction</li>
+</ul>
+
+<p>Using the provided sample data, the contents of the this file is shown here:</p>
+
+<pre>
+   1    SNP1     101000    2 0.864095   0.839595    
+   1    SNP2     102000    2 0.776515   0.836906    
+   1    SNP3     103000    2 0.386562   0.376118    
+   1    SNP4     104000    2 0.532115   0.642094    
+   1    SNP5     105000    2 3.47487e-09    5.04597e-06 
+   1    SNP6     106000    2 0.543536   0.563148    
+   1    SNP7     107000    2 0.451066   0.397487    
+   1    SNP8     108000    2 0.758953   0.75529 
+   1    SNP9     109000    2 0.94371    0.947891    
+   1   SNP10     110000    2 0.972809   0.972334    
+</pre>
+
+<p>The R code can easily be modified to consider other joint interaction tests of interest.
+Also, bed, bim, and fam files can also be used.</p>
+
+<p><strong>Important</strong>:  if one wishes to adjust the robust joint test for gender,
+one must include a numeric gender variable in the PLINK COV file.
+Use of the <code>--sex</code> flag in PLINK will not adjust
+the analysis specified in the R plugin function for gender.</p>
+
+<p>More details on writing, calling, and debugging R functions in PLINK 
+can be found in the
+<a href="http://pngu.mgh.harvard.edu/%7Epurcell/plink/rfunc.shtml">PLINK documentation for R plugin functions</a>.</p>
+
+<h3>
+<a id="questions-and-technical-support" class="anchor" href="#questions-and-technical-support" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Questions and Technical Support</h3>
+
+<p>For questions or concerns with the R function, please contact
+<a href="mailto:rduncan@emory.edu">Richard Duncan</a> and 
+<a href="mailto:mpepste@emory.edu">Michael Epstein</a></p>
+
+<p>We appreciate any feedback you have with our site and instructions. </p>
+
+<p><img src="abstract-word-cloud.png" alt="abstract-word-cloud.png" align="middle"></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/epstein-software/robust-joint-interaction">Robust-joint-interaction</a> is maintained by <a href="https://github.com/epstein-software">epstein-software</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
