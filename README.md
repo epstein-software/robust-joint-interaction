@@ -1,5 +1,5 @@
 
-##![R](Rlogo.png) Robust Joint Tests of SNP and SNP-Environment Interaction
+## ![R](Rlogo.png) Robust Joint Tests of SNP and SNP-Environment Interaction
 
 ### Introduction
 In [Almli et al. (2014)](http://archpsyc.jamanetwork.com/article.aspx?articleid=1919420)
@@ -60,7 +60,7 @@ I. One method uses the command line;  in particular:
 II. Alternatively, one can start Rserve by saving the following two lines
 into a script file called `run-Rserve.R`:
 
-    library(Rserve)<br>
+    library(Rserve)
     Rserve(args="--no-save")
 
 
